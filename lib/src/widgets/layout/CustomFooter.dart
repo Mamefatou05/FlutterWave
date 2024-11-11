@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
+import '../../routes/HistoryRoute.dart';
+import '../../routes/HomeRoute.dart';
+import '../../routes/QRRoute.dart';
+
 class CustomFooter extends StatelessWidget {
-  final int selectedIndex;
-  final Function(int) onTabChanged;
+  final String currentRoute;
 
   const CustomFooter({
     Key? key,
-    required this.selectedIndex,
-    required this.onTabChanged,
+    required this.currentRoute,
   }) : super(key: key);
 
   @override
@@ -29,19 +31,43 @@ class CustomFooter extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _buildNavItem(0, Icons.home, 'Accueil'),
-            _buildNavItem(1, Icons.qr_code_scanner, 'QR'),
-            _buildNavItem(2, Icons.history, 'Historique'),
+            _buildNavItem(
+              context,
+              HomeRoute.home,
+              Icons.home,
+              'Accueil',
+            ),
+            _buildNavItem(
+              context,
+              QRRoute.qr,
+              Icons.qr_code_scanner,
+              'QR',
+            ),
+            _buildNavItem(
+              context,
+              HistoryRoute.history,
+              Icons.history,
+              'Historique',
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildNavItem(int index, IconData icon, String label) {
-    final isSelected = selectedIndex == index;
+  Widget _buildNavItem(
+      BuildContext context,
+      String route,
+      IconData icon,
+      String label,
+      ) {
+    final isSelected = currentRoute == route;
     return InkWell(
-      onTap: () => onTabChanged(index),
+      onTap: () {
+        if (currentRoute != route) {
+          Navigator.pushReplacementNamed(context, route);
+        }
+      },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: isSelected

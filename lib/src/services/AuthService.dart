@@ -16,14 +16,16 @@ class AuthService {
   _tokenStorage = tokenStorage;
 
   Future<JwtModel?> login(LoginModel loginRequest) async {
-  final response = await _apiRepository.post('/auth/login', loginRequest.toJson());
+    final response = await _apiRepository.post('/auth/login', loginRequest.toJson());
 
-  if (response['status'] == 'SUCCESS' && response['data'] != null) {
-  final jwtResponse = JwtModel.fromJson(response['data']);
-  await _tokenStorage.saveToken(jwtResponse.token);
-  return jwtResponse;
-  }
-  return null;
+    print("API Response: $response");  // Ajoutez ceci pour voir la réponse
+
+    if (response['status'] == 'SUCCESS' && response['data'] != null) {
+      final jwtResponse = JwtModel.fromJson(response['data']);
+      await _tokenStorage.saveToken(jwtResponse.token);
+      return jwtResponse;
+    }
+    return null;
   }
 
   Future<void> logout() async {

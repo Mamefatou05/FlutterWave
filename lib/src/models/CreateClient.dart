@@ -1,4 +1,4 @@
-import 'NotificationTypeModel.dart';
+import 'enums.dart';
 
 class CreateClient {
   final String nomComplet;

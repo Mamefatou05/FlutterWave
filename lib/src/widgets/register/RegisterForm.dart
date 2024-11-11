@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../models/CreateClient.dart';
-import '../../models/NotificationTypeModel.dart';
+import '../../models/enums.dart';
 import '../../utils/Validators.dart';
 import '../CustomButton.dart';
 import '../CustomTextField.dart';

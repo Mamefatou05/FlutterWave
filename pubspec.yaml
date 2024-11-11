@@ -19,6 +19,14 @@ dependencies:
   hive: ^2.0.5
   hive_flutter: ^1.1.0
   cryptography: ^2.0.0  # Si je dois chiffrer les données
+  mobile_scanner: ^3.4.1
+  contacts_service: ^0.6.3  # Add this package
+  permission_handler: ^10.2.0  # New dependency
+  intl: ^0.18.0 # Make sure the version is appropriate for your Flutter setup
+  decimal: ^2.3.3
+
+
+
 
 
 

@@ -1,4 +1,5 @@
 import 'package:SenCash/src/models/CreateClient.dart';
+import 'package:flutter/cupertino.dart';
 
 import '../config.dart';
 import '../models/UserModel.dart';
@@ -83,12 +84,23 @@ class UserService {
 
   // Récupérer le profil utilisateur en utilisant le token
   Future<UserModel?> getUserProfile() async {
-    final response = await _apiRepository.get('/users/profile');
-    if (response['statusCode'] == 200) {
-      return UserModel.fromJson(response['data']);
-    } else {
-      print("Erreur : ${response['message']}");
+    try {
+      debugPrint("Appel de getUserProfile dans UserService...");
+      final response = await _apiRepository.get('/users/profile');
+
+      if (response['data'] != null) {
+        debugPrint("Parsing du rôle : ${response['data']['role']}");
+        final user = UserModel.fromJson(response['data']);
+        debugPrint("User parsé avec succès: ${user.toString()}");
+        return user;
+      } else {
+        debugPrint("Données nulles dans la réponse");
+        return null;
+      }
+    } catch (e, stackTrace) {
+      debugPrint("Erreur dans getUserProfile: $e");
+      debugPrint("Stack trace: $stackTrace");
+      return null;
     }
-    return null;
   }
 }

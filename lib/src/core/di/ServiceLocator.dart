@@ -5,8 +5,14 @@ import 'package:http/http.dart' as http;
 import 'package:get_it/get_it.dart';
 
 import '../../config.dart';
+import '../../providers/UserProvider.dart';
 import '../../repositories/ApiRepository.dart';
+import '../../repositories/DioHttpClient.dart';
+import '../../repositories/HttpClientHttp.dart';
+import '../../repositories/HttpClientInterface.dart';
 import '../../services/AuthService.dart';
+import '../../services/QRCodeValidationService.dart';
+import '../../services/TransactionService.dart';
 import '../storage/TokenStorageHive.dart';
 import '../storage/TokenStorageInterface.dart';
 import '../storage/TokenStorageKeychain.dart';
@@ -27,17 +33,24 @@ Future<void> setupServiceLocator({bool useDioClient = true}) async {
   }
 
   if (useDioClient) {
-    sl.registerLazySingleton<Dio>(() => Dio());
-  } else {
-    sl.registerLazySingleton<http.Client>(() => http.Client());
+    sl.registerLazySingleton<HttpClientInterface>(
+          () => DioHttpClient(Dio()),
+    );
   }
 
-  sl.registerLazySingleton<ApiRepository>(() => ApiRepository(
-    dio: useDioClient ? sl<Dio>() : null,
-    httpClient: useDioClient ? null : sl<http.Client>(),
-    tokenStorage: sl<TokenStorageInterface>(),
-    useDio: useDioClient,
-  ));
+  // Repositories
+  sl.registerLazySingleton<ApiRepository>(
+        () => ApiRepository(
+      httpClient: sl<HttpClientInterface>(),
+      tokenStorage: sl<TokenStorageInterface>(),
+      useDio: useDioClient,
+    ),
+  );
+
+// Register Provider
+  sl.registerLazySingleton<UserProvider>(() => UserProvider(sl<UserService>()));
+
+
 
   // Register services
   sl.registerLazySingleton<AuthService>(() => AuthService(
@@ -47,6 +60,17 @@ Future<void> setupServiceLocator({bool useDioClient = true}) async {
 
   // Register UserService
   sl.registerLazySingleton<UserService>(() => UserService(
+    apiRepository: sl<ApiRepository>(),
+  ));
+
+   // Register TransactionService
+
+  sl.registerLazySingleton<TransactionService>(() => TransactionService(
+    apiRepository: sl<ApiRepository>(),
+  ));
+
+  // Register QRCodeValidationService
+  sl.registerLazySingleton<QRCodeValidationService>(() => QRCodeValidationService(
     apiRepository: sl<ApiRepository>(),
   ));
 

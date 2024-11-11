@@ -1,4 +1,0 @@
-enum NotificationType {
-  SMS,
-  EMAIL
-}

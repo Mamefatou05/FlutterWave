@@ -1,4 +1,7 @@
+import 'package:SenCash/src/routes/QRRoute.dart';
+import 'package:SenCash/src/routes/TransactionRoute.dart';
 import 'package:flutter/material.dart';
+import 'HistoryRoute.dart';
 import 'LoginRoute.dart';
 import 'HomeRoute.dart';
 import 'RegisterRoute.dart';
@@ -9,6 +12,9 @@ class AppRoutes {
       ...LoginRoute.getRoutes(),
       ...HomeRoute.getRoutes(),
       ...RegisterRoute.getRoutes(),
+      ...HistoryRoute.getRoutes(),
+      ...QRRoute.getRoutes(),
+      ...TransactionRoute.getRoutes(),
     };
   }
 

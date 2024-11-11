@@ -23,16 +23,22 @@ class _LoginScreenState extends State<LoginScreen> {
       try {
         final authProvider = Provider.of<AuthProvider>(context, listen: false);
         await authProvider.login(loginModel); // Pass loginModel as JSON
-        Navigator.pushReplacementNamed(context, '/home');
+        if (mounted) { // Vérifiez si le widget est encore monté
+          Navigator.pushReplacementNamed(context, '/home');
+        }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
-            backgroundColor: Colors.red,
-          ),
-        );
+        if (mounted) { // Vérifiez si le widget est encore monté
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(e.toString()),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       } finally {
-        setState(() => _isLoading = false);
+        if (mounted) { // Vérifiez si le widget est encore monté
+          setState(() => _isLoading = false);
+        }
       }
     }
   }
