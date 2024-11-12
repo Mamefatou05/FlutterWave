@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/UserProvider.dart';
 import '../routes/HomeRoute.dart';
-import '../widgets/WaveHeader.dart';
+import '../widgets/layout/WaveHeader.dart';
 import '../widgets/tabs/HomeTab.dart';
 import '../widgets/layout/CustomFooter.dart';
 

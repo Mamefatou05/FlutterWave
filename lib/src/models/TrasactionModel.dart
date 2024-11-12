@@ -58,6 +58,7 @@ class TransactionListDto {
   final String recipientPhoneNumber;
   final double amount;
   final TransactionStatus status;
+  final DateTime dateCreation; // Ajout de dateCreation
 
   TransactionListDto({
     required this.id,
@@ -65,27 +66,49 @@ class TransactionListDto {
     required this.recipientPhoneNumber,
     required this.amount,
     required this.status,
+    required this.dateCreation, // Initialisation dans le constructeur
   });
 
-  factory TransactionListDto.fromJson(Map<String, dynamic> json) => TransactionListDto(
-    id: json['id'],
-    senderPhoneNumber: json['senderPhoneNumber'],
-    recipientPhoneNumber: json['recipientPhoneNumber'],
-    amount: json['amount'],
-    status: TransactionStatus.values.firstWhere((e) => e.name == json['status']),
-  );
+  factory TransactionListDto.fromJson(Map<String, dynamic> json) {
+    return TransactionListDto(
+      id: json['id'],
+      senderPhoneNumber: json['senderPhoneNumber'],
+      recipientPhoneNumber: json['recipientPhoneNumber'],
+      amount: json['amount'],
+      status: TransactionStatus.values.firstWhere((e) => e.name == json['status']),
+      dateCreation: DateTime.parse(json['dateCreation']), // Conversion de la date depuis le JSON
+    );
+  }
+
+  // Méthode pour vérifier si la transaction est reçue par l'utilisateur connecté
+  bool isReceived(String currentUserPhoneNumber) {
+    return recipientPhoneNumber == currentUserPhoneNumber;
+  }
 }
+
 
 class MultipleTransferRequestDto {
-  final List<TransferRequestDto> transfers;
+  final String senderPhoneNumber;
+  final List<String> recipientPhoneNumbers;
+  final double amount;
+  final String? groupReference;
 
-  MultipleTransferRequestDto({required this.transfers});
+  MultipleTransferRequestDto({
+    required this.senderPhoneNumber,
+    required this.recipientPhoneNumbers,
+    required this.amount,
+    this.groupReference,
+  });
 
-  Map<String, dynamic> toJson() => {
-    'transfers': transfers.map((transfer) => transfer.toJson()).toList(),
-  };
+  Map<String, dynamic> toJson() {
+    return {
+      'senderPhoneNumber': senderPhoneNumber,
+      'recipientPhoneNumbers': recipientPhoneNumbers,
+      'amount': amount,
+      'groupReference': groupReference,
+    };
+  }
 }
-
 class CancelTransactionRequestDto {
   final int transactionId;
 

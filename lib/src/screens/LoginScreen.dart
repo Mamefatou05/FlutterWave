@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../models/LoginModel.dart';
 import '../providers/AuthProvider.dart';
 import '../widgets/ForgotPasswordButton.dart';
-import '../widgets/WaveHeader.dart';
+import '../widgets/layout/WaveHeader.dart';
 import '../widgets/login/LoginForm.dart';
 import '../widgets/login/SignUpPrompt.dart';
 import '../widgets/login/WelcomeHeader.dart';
@@ -52,7 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               WaveHeader(
-                title: "1000",
+                title: "Connexion",
                 subtitle: "Entrez vos informations...",
                 showBackButton: false,
               ),

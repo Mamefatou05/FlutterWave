@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../routes/QRRoute.dart';
-import '../widgets/WaveHeader.dart';
+import '../widgets/layout/WaveHeader.dart';
 import '../widgets/layout/CustomFooter.dart';
 import '../widgets/tabs/QRTab.dart';
 

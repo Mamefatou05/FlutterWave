@@ -11,6 +11,9 @@ class TransactionProvider with ChangeNotifier {
   bool _loading = false;
   String? _error;
   String? _fieldError;
+  List<TransactionListDto> _transactions = [];
+  bool _isLoading = false;
+  String? _errorMessage; // Pour stocker les erreurs
 
   TransactionProvider(TransactionService transactionService, UserProvider userProvider)
       : _transactionService = transactionService,
@@ -19,6 +22,30 @@ class TransactionProvider with ChangeNotifier {
   bool get loading => _loading;
   String? get error => _error;
   String? get fieldError => _fieldError;
+  String? get errorMessage => _errorMessage;
+
+
+  List<TransactionListDto> get transactions => _transactions;
+  bool get isLoading => _isLoading;
+
+  Future<void> fetchTransactions() async {
+    _isLoading = true;
+    _errorMessage = null; // Réinitialiser le message d'erreur
+    notifyListeners();
+
+    try {
+      // Appel au service pour récupérer les transactions
+      _transactions = await _transactionService.getMyTransactions();
+
+    } catch (error) {
+      // En cas d'erreur, stocker le message et notifier les listeners
+      _errorMessage = "Erreur lors du chargement des transactions : $error";
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
 
   void _setLoading(bool value) {
     _loading = value;
@@ -47,13 +74,6 @@ class TransactionProvider with ChangeNotifier {
       return false;
     }
 
-
-
-    if (senderPhoneNumber == null || senderPhoneNumber.isEmpty) {
-      _setLoading(false);
-      _setError("Utilisateur non connecté");
-      return false;
-    }
     final transferRequest = TransferRequestDto(
       senderPhoneNumber: senderPhoneNumber,
       recipientPhoneNumber: receiverPhone,
@@ -62,33 +82,49 @@ class TransactionProvider with ChangeNotifier {
     );
 
 
-
-    try {
       final response = await _transactionService.transfer(transferRequest);
       _setLoading(false);
-
-      if (!response.success) {
-        final errorMessage = response.errorMessage ?? "Une erreur est survenue";
-
-        if (errorMessage.contains("Destinataire")) {
-          _setError(errorMessage, "phone");
-        } else if (errorMessage.contains("solde")) {
-          _setError(errorMessage, "amount");
-        } else {
-          _setError(errorMessage);
-        }
-        return false;
+      // Vérifie si la réponse est un succès
+      if (response != null) {
+        return true; // Retourne true si la transaction est réussie
       }
+      return false;
+  }
 
-      // En cas de succès
-      return true;
+  List<TransferResponseDto>? _responses;
+
+
+  List<TransferResponseDto>? get responses => _responses;
+
+  Future<void> performMultipleTransfer({
+    required List<String> receiverPhone,
+    required double amount,
+    String? description,
+  }) async {
+    try {
+      _isLoading = true;
+      _error = null;
+      final senderPhoneNumber = _userProvider.user?.numeroTelephone;
+      if (senderPhoneNumber == null || senderPhoneNumber.isEmpty) {
+        _isLoading = false;
+        _error = "Utilisateur non connecté";
+        return;
+      }
+      final transferRequestMultiple = MultipleTransferRequestDto(
+        senderPhoneNumber: senderPhoneNumber,
+        recipientPhoneNumbers: receiverPhone,
+        amount: amount,
+        groupReference: description,
+      );
+      notifyListeners();
+      _responses = await _transactionService.multipleTransfer(transferRequestMultiple);
 
     } catch (e) {
-      print("Erreur de transaction: $e");
-      _setLoading(false);
-      _setError('Une erreur est survenue lors de la transaction');
-      return false;
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
-
   }
+
 }

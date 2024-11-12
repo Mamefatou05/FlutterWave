@@ -1,19 +1,15 @@
-import 'package:dio/dio.dart';
-import 'package:http/http.dart' as http;
-
 import '../config.dart';
 import '../core/storage/TokenStorageInterface.dart';
+import '../models/ResponseModel.dart';
 import 'HttpClientInterface.dart';
 
 class ApiRepository {
   final HttpClientInterface _httpClient;
-  final bool useDio;
   final TokenStorageInterface _tokenStorage;
 
   ApiRepository({
     required HttpClientInterface httpClient,
     required TokenStorageInterface tokenStorage,
-    required this.useDio,
   })  : _httpClient = httpClient,
         _tokenStorage = tokenStorage;
 
@@ -22,115 +18,29 @@ class ApiRepository {
     return await _tokenStorage.getToken();
   }
 
-  // Méthode pour récupérer le token de rafraîchissement
-  Future<String?> _getRefreshToken() async {
-    return await _tokenStorage.getRefreshToken();
+  // Centralize token header addition
+  Future<Map<String, String>> _getHeaders() async {
+    final accessToken = await _getAccessToken();
+    return accessToken != null ? {'Authorization': 'Bearer $accessToken'} : {};
   }
 
-  Future<Map<String, dynamic>> post(String endpoint, Map<String, dynamic> data) async {
-    try {
-      final accessToken = await _getAccessToken();
-      final headers = accessToken != null
-          ? {'Authorization': 'Bearer $accessToken'} as Map<String, dynamic> // Cast explicite ici
-          : <String, dynamic>{};
-
-      final response = await _httpClient.post(
-        '$baseUrl$endpoint',
-        data: data,
-        headers: headers,
-      );
-      return _formatResponse(response);
-    } catch (e) {
-      return _handleError(e);
-    }
+  Future<ResponseModel> post(String endpoint, Map<String, dynamic> data) async {
+    final headers = await _getHeaders();
+    return await _httpClient.post('$baseUrl$endpoint', data: data, headers: headers);
   }
 
-  Future<dynamic> get(String endpoint) async {
-    try {
-      final accessToken = await _getAccessToken();
-      final headers = accessToken != null
-          ? {'Authorization': 'Bearer $accessToken'} as Map<String, dynamic> // Cast explicite ici
-          : <String, dynamic>{};
-
-      final response = await _httpClient.get(
-        '$baseUrl$endpoint',
-        headers: headers,
-      );
-      return _formatResponse(response);
-    } catch (e) {
-      return _handleError(e);
-    }
+  Future<ResponseModel> get(String endpoint) async {
+    final headers = await _getHeaders();
+    return await _httpClient.get('$baseUrl$endpoint', headers: headers);
   }
 
-  Future<dynamic> delete(String endpoint) async {
-    try {
-      final accessToken = await _getAccessToken();
-      final headers = accessToken != null
-          ? {'Authorization': 'Bearer $accessToken'} as Map<String, dynamic> // Cast explicite ici
-          : <String, dynamic>{};
-
-      final response = await _httpClient.delete(
-        '$baseUrl$endpoint',
-        headers: headers,
-      );
-      return _formatResponse(response);
-    } catch (e) {
-      return _handleError(e);
-    }
+  Future<ResponseModel> delete(String endpoint) async {
+    final headers = await _getHeaders();
+    return await _httpClient.delete('$baseUrl$endpoint', headers: headers);
   }
 
-  Future<dynamic> put(String endpoint, Map<String, dynamic> data) async {
-    try {
-      final accessToken = await _getAccessToken();
-      final headers = accessToken != null
-          ? {'Authorization': 'Bearer $accessToken'} as Map<String, dynamic> // Cast explicite ici
-          : <String, dynamic>{};
-
-      final response = await _httpClient.put(
-        '$baseUrl$endpoint',
-        data: data,
-        headers: headers,
-      );
-      return _formatResponse(response);
-    } catch (e) {
-      return _handleError(e);
-    }
-  }
-
-  dynamic _formatResponse(Response response) {
-    print("Réponse reçue : $response");
-    print("Status Code: ${response.statusCode}");
-    print("Data: ${response.data.containsKey('data') ? response.data['data'] : 'Aucune donnée'}");
-    print("Message: ${response.data.containsKey('message') ? response.data['message'] : 'Aucun message'}");
-    print("Status: ${response.data.containsKey('status') ? response.data['status'] : 'INCONNU'}");
-
-    return {
-      'statusCode': response.statusCode,
-      'data': response.data.containsKey('data') ? response.data['data'] : {},
-      'message': response.data.containsKey('message') ? response.data['message'] : 'Aucun message',
-      'status': response.data.containsKey('status') ? response.data['status'] : 'INCONNU',
-    };
-  }
-
-  dynamic _handleError(dynamic e) {
-    if (e is DioException) {
-      return {
-        'statusCode': e.response?.statusCode ?? 500,
-        'message': e.response?.data?.toString() ?? 'Erreur de connexion réseau',
-        'status': 'ECHEC',
-      };
-    } else if (e is http.ClientException) {
-      return {
-        'statusCode': 500,
-        'message': 'Erreur de connexion HTTP',
-        'status': 'ECHEC',
-      };
-    }
-
-    return {
-      'statusCode': 500,
-      'message': 'Erreur inconnue',
-      'status': 'ECHEC'
-    };
+  Future<ResponseModel> put(String endpoint, Map<String, dynamic> data) async {
+    final headers = await _getHeaders();
+    return await _httpClient.put('$baseUrl$endpoint', data: data, headers: headers);
   }
 }

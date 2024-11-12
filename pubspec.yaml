@@ -24,6 +24,12 @@ dependencies:
   permission_handler: ^10.2.0  # New dependency
   intl: ^0.18.0 # Make sure the version is appropriate for your Flutter setup
   decimal: ^2.3.3
+  flutter_secure_storage: ^5.0.2
+  json_annotation: ^4.0.0  # Ajoutez la dépendance json_serializable
+  json_serializable: ^6.0.1
+
+
+
 
 
 

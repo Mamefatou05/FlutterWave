@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../models/CreateClient.dart';
 import '../providers/AuthProvider.dart';
 import '../providers/UserProvider.dart';
-import '../widgets/WaveHeader.dart';
+import '../widgets/layout/WaveHeader.dart';
 import '../widgets/register/RegisterForm.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -23,7 +23,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: Column(
             children: [
               WaveHeader(
-                title: "1000",
+                title: "Inscription",
                 subtitle: "Entrez vos informations...",
                 showBackButton: true, // Afficher le bouton retour
               ),

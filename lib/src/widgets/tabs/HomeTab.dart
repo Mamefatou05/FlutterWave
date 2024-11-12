@@ -1,10 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/UserProvider.dart';
+import '../../routes/HistoryRoute.dart';
+import '../../routes/PlanificationRoute.dart';
 import '../../routes/TransactionRoute.dart';
-import '../../screens/HomeScreen.dart';
+import '../../theme/AppColors.dart';
 import '../transactions/RecentTransaction.dart';
 
 class HomeTab extends StatelessWidget {
@@ -28,12 +29,11 @@ class HomeTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildQuickActions(context), // Pass context here
+          _buildQuickActions(context),
           RecentTransactionsWidget(
             transactions: allTransactions,
             onSeeAllPressed: () {
               // Navigation vers l'onglet historique
-              // Vous pouvez aussi naviguer vers une nouvelle page si préféré
             },
           ),
         ],
@@ -41,7 +41,16 @@ class HomeTab extends StatelessWidget {
     );
   }
 
-  Widget _buildQuickActions(BuildContext context) { // Add BuildContext parameter here
+  Widget _buildQuickActions(BuildContext context) {
+    // Définition de quickActions
+    final quickActions = [
+      {'icon': Icons.send, 'label': 'Envoyer', 'route': TransactionRoute.single},
+      {'icon': Icons.schedule, 'label': 'Planification', 'route': PlanificationRoute.create},
+      {'icon': Icons.history, 'label': 'Historique', 'route': HistoryRoute.history},
+      {'icon': Icons.multiple_stop, 'label': 'Multiple', 'route': TransactionRoute.multiple}, // Route pour les paramètres
+
+    ];
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -57,29 +66,15 @@ class HomeTab extends StatelessWidget {
           const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildActionButton(
-                icon: Icons.send,
-                label: 'Envoyer',
+            children: quickActions.map((action) {
+              return _buildActionButton(
+                icon: action['icon'] as IconData,
+                label: action['label'] as String,
                 onTap: () {
-                  Navigator.pushNamed(context, TransactionRoute.home); // Pass context here
+                  Navigator.pushNamed(context, action['route'] as String);
                 },
-              ),
-              _buildActionButton(
-                icon: Icons.qr_code,
-                label: 'QR Code',
-                onTap: () {
-                  // Navigation vers la page QR
-                },
-              ),
-              _buildActionButton(
-                icon: Icons.history,
-                label: 'Historique',
-                onTap: () {
-                  // Navigation vers la page historique
-                },
-              ),
-            ],
+              );
+            }).toList(),
           ),
         ],
       ),
@@ -98,21 +93,22 @@ class HomeTab extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFF8B5CF6).withOpacity(0.1),
+              color: AppColors.primary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
               icon,
-              color: const Color(0xFF8B5CF6),
+              color: AppColors.primary,
               size: 28,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w500,
+              color: AppColors.textPrimary,
             ),
           ),
         ],

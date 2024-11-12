@@ -1,36 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/UserModel.dart';
 import '../providers/TransactionProvider.dart';
 import '../widgets/CustomTextField.dart';
 import '../widgets/contact/ContactPickerField.dart'; // Votre champ personnalisé pour les montants
 
-class TransactionScreen extends StatefulWidget {
-  final UserModel? receiverData; // Utilisateur destinataire, optionnel
-
-  const TransactionScreen({Key? key, this.receiverData}) : super(key: key);
+class MultipleTransferScreen extends StatefulWidget {
+  const MultipleTransferScreen({Key? key}) : super(key: key);
 
   @override
-  State<TransactionScreen> createState() => _TransactionScreenState();
+  State<MultipleTransferScreen> createState() => _MultipleTransferScreenState();
 }
 
-class _TransactionScreenState extends State<TransactionScreen> {
-  final TextEditingController _receiverController = TextEditingController();
+class _MultipleTransferScreenState extends State<MultipleTransferScreen> {
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _amountReceivedController = TextEditingController();
+  final TextEditingController _contactsController = TextEditingController();
   final TextEditingController _searchController = TextEditingController(); // Contrôleur de recherche
 
 
   bool _isLoading = false;
 
-  @override
-  void initState() {
-    super.initState();
-    // Si receiverData est passé, on pré-remplit le champ avec le numéro de téléphone du destinataire
-    if (widget.receiverData != null) {
-      _receiverController.text = widget.receiverData!.numeroTelephone ?? '';
-    }
-  }
+  List<String> _selectedContacts = [];
 
   void _syncAmounts({bool isSend = true}) {
     final amount = double.tryParse(isSend ? _amountController.text : _amountReceivedController.text);
@@ -45,35 +35,41 @@ class _TransactionScreenState extends State<TransactionScreen> {
     }
   }
 
-  Future<void> _performTransaction() async {
+  Future<void> _performMultipleTransfer() async {
+    if (_selectedContacts.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Veuillez sélectionner des destinataires.")),
+      );
+      return;
+    }
+
     final provider = Provider.of<TransactionProvider>(context, listen: false);
-    final receiverPhone = _receiverController.text;
     final amount = double.tryParse(_amountController.text);
 
-    if (receiverPhone.isEmpty || amount == null || amount <= 0) {
+    if (amount == null || amount <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Veuillez remplir tous les champs correctement.")),
+        const SnackBar(content: Text("Veuillez saisir un montant valide.")),
       );
       return;
     }
 
     setState(() => _isLoading = true);
 
-    final success = await provider.sendMoney(
-      receiverPhone: receiverPhone,
+    await provider.performMultipleTransfer(
+      receiverPhone: _selectedContacts,
       amount: amount,
-      description: "Transfert simple",
+      description: "Transfert multiple",
     );
 
     setState(() => _isLoading = false);
 
-    if (success) {
+    if (provider.error == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Transfert effectué avec succès !")),
+        const SnackBar(content: Text("Transfert multiple réussi !")),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Échec du transfert.")),
+        SnackBar(content: Text("Erreur : ${provider.error}")),
       );
     }
   }
@@ -82,19 +78,13 @@ class _TransactionScreenState extends State<TransactionScreen> {
   Widget build(BuildContext context) {
     final provider = Provider.of<TransactionProvider>(context);
     return Scaffold(
-      appBar: AppBar(title: const Text("Transfert Simple")),
+      appBar: AppBar(title: const Text("Transfert Multiple")),
       body: provider.isLoading
           ? const Center(child: CircularProgressIndicator())
           : Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            CustomTextField(
-              controller: _receiverController,
-              label: "Téléphone du destinataire",
-              prefixIcon: Icons.phone,
-            ),
-            const SizedBox(height: 16),
             CustomTextField(
               controller: _amountController,
               label: "Montant à envoyer",
@@ -112,14 +102,36 @@ class _TransactionScreenState extends State<TransactionScreen> {
             ),
             const SizedBox(height: 16),
             ContactPickerField(
-              controller: _receiverController,
-              label: "Sélectionner un destinataire",
+              controller: _contactsController,
+              label: "Sélectionnez des destinataires",
+              multipleSelection: true, // Mode multiple
               searchController: _searchController, // Passer le searchController ici
-              multipleSelection: false, // Mode simple
+              onContactsSelected: (List<String> contacts) {
+                setState(() {
+                  _selectedContacts = contacts;
+                });
+              },
             ),
-            const Spacer(),
+            const SizedBox(height: 16),
+            Expanded(
+              child: ListView(
+                children: _selectedContacts
+                    .map((contact) => ListTile(
+                  title: Text(contact),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.remove_circle),
+                    onPressed: () {
+                      setState(() {
+                        _selectedContacts.remove(contact);
+                      });
+                    },
+                  ),
+                ))
+                    .toList(),
+              ),
+            ),
             ElevatedButton(
-              onPressed: _isLoading ? null : _performTransaction,
+              onPressed: _isLoading ? null : _performMultipleTransfer,
               child: _isLoading
                   ? const CircularProgressIndicator()
                   : const Text("Envoyer"),

@@ -8,6 +8,7 @@ class CustomTextField extends StatelessWidget {
   final bool obscureText;
   final TextInputType? keyboardType;
   final String? Function(String?)? validator;
+  final ValueChanged<String>? onChanged; // Le paramètre onChanged
 
   const CustomTextField({
     Key? key,
@@ -18,6 +19,7 @@ class CustomTextField extends StatelessWidget {
     this.obscureText = false,
     this.keyboardType,
     this.validator,
+    this.onChanged, // Le paramètre onChanged
   }) : super(key: key);
 
   @override
@@ -27,6 +29,7 @@ class CustomTextField extends StatelessWidget {
       obscureText: obscureText,
       keyboardType: keyboardType,
       validator: validator,
+      onChanged: onChanged, // Intégration du onChanged ici
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(prefixIcon),

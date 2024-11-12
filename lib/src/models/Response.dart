@@ -39,9 +39,17 @@ class ApiResponse<T> {
     }
 
     // Si c'est une réponse de succès
-    return ApiResponse<TransferResponseDto>.success(
-      TransferResponseDto.fromJson(json['data'] as Map<String, dynamic>),
-      json['statusCode'] as int,
+    if (json['status'] == 'SUCCESS' || json['status'] == 'SUCCES') {
+      return ApiResponse<TransferResponseDto>.success(
+        TransferResponseDto.fromJson(json['data'] as Map<String, dynamic>),
+        json['statusCode'] as int,
+      );
+    }
+
+    // Pour tout autre cas non géré, retourner une erreur par défaut
+    return ApiResponse<TransferResponseDto>.error(
+      "Réponse du serveur invalide",
+      500,
     );
   }
 }

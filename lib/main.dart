@@ -1,6 +1,8 @@
 import 'package:SenCash/src/core/di/ServiceLocator.dart';
+import 'package:SenCash/src/providers/PlanificationTransfertProvider.dart';
 import 'package:SenCash/src/providers/TransactionProvider.dart';
 import 'package:SenCash/src/providers/UserProvider.dart';
+import 'package:SenCash/src/services/PlanificationTransfertService.dart';
 import 'package:SenCash/src/services/TransactionService.dart';
 import 'package:SenCash/src/theme/AppColors.dart';
 import 'package:SenCash/src/services/UserService.dart';
@@ -34,10 +36,13 @@ class MyApp extends StatelessWidget {
           create: (_) => UserProvider(sl<UserService>()),
         ),
 
-        // UserProvider pour la gestion des utilisateurs
         ChangeNotifierProvider(
           create: (_) => TransactionProvider(sl<TransactionService>(), sl<UserProvider>()),
         ),
+        ChangeNotifierProvider(
+          create: (_) => PlanificationTransfertProvider(sl<PlanificationTransfertService>(), sl<UserProvider>()),
+        ),
+
       ],
       child: MaterialApp(
         title: 'SenCash App',

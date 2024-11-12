@@ -11,6 +11,8 @@ import '../../repositories/DioHttpClient.dart';
 import '../../repositories/HttpClientHttp.dart';
 import '../../repositories/HttpClientInterface.dart';
 import '../../services/AuthService.dart';
+import '../../services/ContactService.dart';
+import '../../services/PlanificationTransfertService.dart';
 import '../../services/QRCodeValidationService.dart';
 import '../../services/TransactionService.dart';
 import '../storage/TokenStorageHive.dart';
@@ -34,7 +36,13 @@ Future<void> setupServiceLocator({bool useDioClient = true}) async {
 
   if (useDioClient) {
     sl.registerLazySingleton<HttpClientInterface>(
-          () => DioHttpClient(Dio()),
+          () => DioHttpClient(),
+    );
+  }
+
+  else {
+    sl.registerLazySingleton<HttpClientInterface>(
+          () => HttpHttpClient(),
     );
   }
 
@@ -43,7 +51,6 @@ Future<void> setupServiceLocator({bool useDioClient = true}) async {
         () => ApiRepository(
       httpClient: sl<HttpClientInterface>(),
       tokenStorage: sl<TokenStorageInterface>(),
-      useDio: useDioClient,
     ),
   );
 
@@ -73,6 +80,14 @@ Future<void> setupServiceLocator({bool useDioClient = true}) async {
   sl.registerLazySingleton<QRCodeValidationService>(() => QRCodeValidationService(
     apiRepository: sl<ApiRepository>(),
   ));
+
+  //Register PlanificationTransfertService
+  sl.registerLazySingleton<PlanificationTransfertService>(() => PlanificationTransfertService(
+    apiRepository: sl<ApiRepository>(),
+  ));
+  sl.registerLazySingleton(() => ContactService());
+
+
 
   print("Service Locator setup completed.");
 }

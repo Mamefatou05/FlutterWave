@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../routes/HistoryRoute.dart';
 import '../routes/routes.dart';
-import '../widgets/WaveHeader.dart';
+import '../widgets/layout/WaveHeader.dart';
 import '../widgets/layout/CustomFooter.dart';
 import '../widgets/tabs/HistoryTab.dart';
 

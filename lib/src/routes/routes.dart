@@ -1,3 +1,4 @@
+import 'package:SenCash/src/routes/PlanificationRoute.dart';
 import 'package:SenCash/src/routes/QRRoute.dart';
 import 'package:SenCash/src/routes/TransactionRoute.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ class AppRoutes {
       ...HistoryRoute.getRoutes(),
       ...QRRoute.getRoutes(),
       ...TransactionRoute.getRoutes(),
+      ...PlanificationRoute.getRoutes(),
     };
   }
 

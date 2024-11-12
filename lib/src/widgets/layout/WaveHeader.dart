@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../theme/AppColors.dart';
+import '../../theme/AppColors.dart';
 
 class WaveHeader extends StatelessWidget {
   final String title;

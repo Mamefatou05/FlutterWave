@@ -43,11 +43,7 @@ class MyQRView extends StatefulWidget {
 }
 
 class _MyQRViewState extends State<MyQRView> {
-  @override
-  void initState() {
-    super.initState();
-    // Vous n'avez plus besoin de générer le QR code, il est déjà dans l'utilisateur
-  }
+
 
   @override
   Widget build(BuildContext context) {
