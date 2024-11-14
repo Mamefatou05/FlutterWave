@@ -22,12 +22,21 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() => _isLoading = true);
       try {
         final authProvider = Provider.of<AuthProvider>(context, listen: false);
-        await authProvider.login(loginModel); // Pass loginModel as JSON
-        if (mounted) { // Vérifiez si le widget est encore monté
-          Navigator.pushReplacementNamed(context, '/home');
+        bool isSuccess = await authProvider.login(loginModel); // Vérifie si la connexion a réussi
+        if (mounted && isSuccess) { // Si la connexion a réussi et le widget est encore monté
+          Navigator.pushReplacementNamed(context, '/home');  // Naviguer vers la page d'accueil
+        } else {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("Échec de la connexion. Veuillez vérifier vos informations."),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
         }
       } catch (e) {
-        if (mounted) { // Vérifiez si le widget est encore monté
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(e.toString()),
@@ -36,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
           );
         }
       } finally {
-        if (mounted) { // Vérifiez si le widget est encore monté
+        if (mounted) {
           setState(() => _isLoading = false);
         }
       }
@@ -68,6 +77,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
               ),
+              if (_isLoading)
+                Center(
+                  child: CircularProgressIndicator(),
+                ),
             ],
           ),
         ),

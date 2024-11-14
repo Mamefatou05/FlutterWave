@@ -6,7 +6,7 @@ import '../providers/PlanificationTransfertProvider.dart';
 import '../routes/PlanificationRoute.dart';
 import '../widgets/layout/CustomFooter.dart';
 import '../widgets/layout/WaveHeader.dart';
-import '../widgets/planifications/CreerPlanificationForm.dart';
+import '../widgets/transactions/planifications/CreerPlanificationForm.dart';
 
 
 class CreerPlanificationScreen extends StatelessWidget {

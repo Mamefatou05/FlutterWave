@@ -51,9 +51,9 @@ class _ContactPickerDialogState extends State<ContactPickerDialog> {
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
-              controller: widget.searchController, // Utilisation du controller passé
+              controller: widget.searchController,
               decoration: InputDecoration(
-                labelText: widget.label, // Utilisation du label passé
+                labelText: widget.label,
                 hintText: 'Rechercher un contact...',
                 prefixIcon: Icon(Icons.search),
               ),
@@ -69,7 +69,6 @@ class _ContactPickerDialogState extends State<ContactPickerDialog> {
                   final hasPhone = contact.phones?.isNotEmpty ?? false;
 
                   if (widget.multipleSelection) {
-                    // Mode sélection multiple
                     return CheckboxListTile(
                       value: selectedContacts.contains(contact),
                       onChanged: hasPhone ? (bool? value) {
@@ -102,7 +101,9 @@ class _ContactPickerDialogState extends State<ContactPickerDialog> {
                       ),
                       enabled: hasPhone,
                       onTap: hasPhone
-                          ? () => Navigator.of(context).pop(contact)
+                          ? () => Navigator.of(context).pop(
+                          [contact.phones!.first.value!.replaceAll(RegExp(r'[^\d+]'), '')]
+                      )
                           : null,
                     );
                   }
@@ -120,7 +121,10 @@ class _ContactPickerDialogState extends State<ContactPickerDialog> {
         if (widget.multipleSelection)
           ElevatedButton(
             onPressed: selectedContacts.isNotEmpty
-                ? () => Navigator.of(context).pop(selectedContacts.toList())
+                ? () => Navigator.of(context).pop(
+                selectedContacts
+                    .map((c) => c.phones!.first.value!.replaceAll(RegExp(r'[^\d+]'), ''))
+                    .toList())
                 : null,
             child: Text('Sélectionner (${selectedContacts.length})'),
           ),

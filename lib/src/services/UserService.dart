@@ -60,6 +60,8 @@ class UserService {
   Future<UserModel?> getUserProfile() async {
     try {
       final response = await _apiRepository.get('/users/profile');
+      print("les donnée de l'utilisateur au complet");
+      print(response.data);
       return response.data != null ? UserModel.fromJson(response.data) : null;
     } catch (e, stackTrace) {
       debugPrint("Erreur dans getUserProfile: $e");

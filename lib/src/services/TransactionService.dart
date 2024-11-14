@@ -17,6 +17,8 @@ class TransactionService {
 
     try {
       final response = await _apiRepository.get(endpoint);
+      print('la liste des transactions');
+      print(response.data);
       if (response.data is List) {
         return (response.data as List).map((json) => TransactionListDto.fromJson(json)).toList();
       }
@@ -29,6 +31,8 @@ class TransactionService {
 
   Future<TransferResponseDto> transfer(TransferRequestDto transferRequest) async {
     final response = await _apiRepository.post('/transactions/transfer', transferRequest.toJson());
+    print("les donné retourné apres transaction");
+    print(response.data);
     return TransferResponseDto.fromJson(response.data);
   }
 

@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 enum Periodicity { DAILY, WEEKLY, MONTHLY }
-enum TransactionStatus { PENDING, COMPLETED, CANCELLED }
-enum TransactionType { TRANSFER, DEPOSIT, WITHDRAWAL }
+enum TransactionStatus { PENDING, COMPLETED, CANCELLED, UNKNOWN }
+enum TransactionType { TRANSFER, DEPOSIT, WITHDRAWAL, DEFAULT }
 
 class TransferRequestDto {
   final String senderPhoneNumber;
@@ -29,60 +29,73 @@ class TransferRequestDto {
 }
 
 class TransferResponseDto {
-  final int id;
-  final String senderPhoneNumber;
-  final String recipientPhoneNumber;
-  final double amount;
+  final int transactionId; // Changement de `id` à `transactionId`
+  final String senderFullName; // Correspondance avec `senderFullName` au lieu de `senderPhoneNumber`
+  final String receiverFullName; // Correspondance avec `receiverFullName` au lieu de `recipientPhoneNumber`
+  final double totalAmount; // Correspondance avec `totalAmount` au lieu de `amount`
   final TransactionStatus status;
 
   TransferResponseDto({
-    required this.id,
-    required this.senderPhoneNumber,
-    required this.recipientPhoneNumber,
-    required this.amount,
+    required this.transactionId,
+    required this.senderFullName,
+    required this.receiverFullName,
+    required this.totalAmount,
     required this.status,
   });
 
   factory TransferResponseDto.fromJson(Map<String, dynamic> json) => TransferResponseDto(
-    id: json['id'],
-    senderPhoneNumber: json['senderPhoneNumber'],
-    recipientPhoneNumber: json['recipientPhoneNumber'],
-    amount: json['amount'],
-    status: TransactionStatus.values.firstWhere((e) => e.name == json['status']),
+    transactionId: json['transactionId'] ?? 0,
+    senderFullName: json['senderFullName'] ?? '',
+    receiverFullName: json['receiverFullName'] ?? '',
+    totalAmount: (json['totalAmount'] ?? 0.0).toDouble(),
+    status: json['status'] != null
+        ? TransactionStatus.values.firstWhere((e) => e.name == json['status'], orElse: () => TransactionStatus.UNKNOWN)
+        : TransactionStatus.UNKNOWN,
   );
 }
 
+
 class TransactionListDto {
   final int id;
-  final String senderPhoneNumber;
-  final String recipientPhoneNumber;
-  final double amount;
-  final TransactionStatus status;
-  final DateTime dateCreation; // Ajout de dateCreation
+  final double montant;
+  final String typeTransaction; // TRANSFERT ou RETRAIT
+  final String statut; // EN_ATTENTE ou COMPLETE
+  final DateTime dateCreation;
+  final String autrePartiePrenante; // Nom de l'autre partie
+  final bool estEmetteur; // True si l'utilisateur est l'émetteur
 
   TransactionListDto({
     required this.id,
-    required this.senderPhoneNumber,
-    required this.recipientPhoneNumber,
-    required this.amount,
-    required this.status,
-    required this.dateCreation, // Initialisation dans le constructeur
+    required this.montant,
+    required this.typeTransaction,
+    required this.statut,
+    required this.dateCreation,
+    required this.autrePartiePrenante,
+    required this.estEmetteur,
   });
 
   factory TransactionListDto.fromJson(Map<String, dynamic> json) {
     return TransactionListDto(
       id: json['id'],
-      senderPhoneNumber: json['senderPhoneNumber'],
-      recipientPhoneNumber: json['recipientPhoneNumber'],
-      amount: json['amount'],
-      status: TransactionStatus.values.firstWhere((e) => e.name == json['status']),
-      dateCreation: DateTime.parse(json['dateCreation']), // Conversion de la date depuis le JSON
+      montant: json['montant']?.toDouble() ?? 0.0,
+      typeTransaction: json['typeTransaction'] ?? 'INCONNU',
+      statut: json['statut'] ?? 'INCONNU',
+      dateCreation: DateTime.parse(json['dateCreation']),
+      autrePartiePrenante: json['autrePartiePrenante'] ?? '',
+      estEmetteur: json['estEmetteur'] ?? false,
     );
   }
 
-  // Méthode pour vérifier si la transaction est reçue par l'utilisateur connecté
-  bool isReceived(String currentUserPhoneNumber) {
-    return recipientPhoneNumber == currentUserPhoneNumber;
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'montant': montant,
+      'typeTransaction': typeTransaction,
+      'statut': statut,
+      'dateCreation': dateCreation.toIso8601String(),
+      'autrePartiePrenante': autrePartiePrenante,
+      'estEmetteur': estEmetteur,
+    };
   }
 }
 

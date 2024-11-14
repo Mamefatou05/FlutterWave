@@ -6,14 +6,15 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-
     <!-- Indique que la caméra n'est pas strictement requise -->
     <uses-feature android:name="android.hardware.camera" android:required="false" />
 
     <application
             android:label="flutterwave"
             android:name="${applicationName}"
-            android:icon="@mipmap/ic_launcher">
+            android:icon="@mipmap/ic_launcher"
+            android:enableOnBackInvokedCallback="true"> <!-- Ajouté ici correctement -->
+
         <activity
                 android:name=".MainActivity"
                 android:exported="true"
@@ -32,10 +33,12 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
         <meta-data
                 android:name="flutterEmbedding"
                 android:value="2" />
     </application>
+
     <queries>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>

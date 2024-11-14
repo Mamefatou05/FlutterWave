@@ -20,6 +20,12 @@ class HistoryTab extends StatelessWidget {
         final user = userProvider.user ;
         final transactionProvider = context.watch<TransactionProvider>();
 
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (transactionProvider.transactions.isEmpty && !transactionProvider.isLoading) {
+            transactionProvider.fetchTransactions();
+          }
+        });
+
         if (user == null) {
           return const Center(child: CircularProgressIndicator());
         }

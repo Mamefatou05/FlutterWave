@@ -1,3 +1,4 @@
+import 'package:SenCash/src/routes/HomeRoute.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/UserModel.dart';
@@ -71,6 +72,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Transfert effectué avec succès !")),
       );
+      Navigator.pushReplacementNamed(context, HomeRoute.home);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Échec du transfert.")),

@@ -46,7 +46,6 @@ class HomeTab extends StatelessWidget {
     final quickActions = [
       {'icon': Icons.send, 'label': 'Envoyer', 'route': TransactionRoute.single},
       {'icon': Icons.schedule, 'label': 'Planification', 'route': PlanificationRoute.create},
-      {'icon': Icons.history, 'label': 'Historique', 'route': HistoryRoute.history},
       {'icon': Icons.multiple_stop, 'label': 'Multiple', 'route': TransactionRoute.multiple}, // Route pour les paramètres
 
     ];

@@ -6,12 +6,27 @@ import 'HttpClientInterface.dart';
 class HttpHttpClient implements HttpClientInterface {
   // Standardize response formatting for http package
   ResponseModel _formatResponse(http.Response response) {
-    final Map<String, dynamic> data = jsonDecode(response.body);
+    final decodedResponse = jsonDecode(response.body);
+
+    // Assurez-vous que chaque champ est correctement extrait.
+    // Si `data` contient un texte d'erreur, le déplacer dans `message`.
+    final dataContent = (decodedResponse.containsKey('data') && decodedResponse['data'] is Map<String, dynamic>)
+        ? decodedResponse['data']
+        : {}; // Si `data` n'est pas une Map, on le laisse vide
+
+    final messageContent = decodedResponse.containsKey('message')
+        ? decodedResponse['message']
+        : (decodedResponse.containsKey('data') && decodedResponse['data'] is String
+        ? decodedResponse['data']
+        : 'Aucun message'); // Utiliser `data` comme message si `data` est un texte
+
+    final statusContent = decodedResponse.containsKey('status') ? decodedResponse['status'] : 'INCONNU';
+
     return ResponseModel(
       statusCode: response.statusCode,
-      data: data.containsKey('data') ? data['data'] : {},
-      message: data.containsKey('message') ? data['message'] : 'Aucun message',
-      status: data.containsKey('status') ? data['status'] : 'INCONNU',
+      data: dataContent,
+      message: messageContent,
+      status: statusContent,
     );
   }
 

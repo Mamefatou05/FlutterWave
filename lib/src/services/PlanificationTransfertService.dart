@@ -8,7 +8,19 @@ class PlanificationTransfertService {
 
   Future<Map<String, dynamic>?> createPlanification(PlanificationTransfertModel planificationDTO) async {
     final response = await _apiRepository.post('/planification', planificationDTO.toJson());
-    return response.data;
+
+    print("la planification effectuée");
+    print("Message : ${response.message}");
+
+    // Vérifiez que `data` est bien un `Map` avant de le retourner
+    if (response.data is Map<String, dynamic> && response.statusCode == 200) {
+      print(response.data);
+      return response.data;
+    } else {
+      // Log l'erreur si `data` contient un message d'erreur
+      print("Erreur lors de la création de la planification: ${response.message}");
+      return null;
+    }
   }
 
   Future<void> relancerPlanification(int id) async {

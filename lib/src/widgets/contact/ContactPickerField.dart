@@ -35,44 +35,32 @@ class _ContactPickerFieldState extends State<ContactPickerField> {
 
       if (!mounted) return;
 
-      final List<Contact>? selectedContacts = await showDialog<List<Contact>>(
+      final List<String>? selectedPhoneNumbers = await showDialog<List<String>>(
         context: context,
         builder: (context) => ContactPickerDialog(
           contacts: contacts,
-          multipleSelection: widget.multipleSelection, // Mode dynamique
-          searchController: widget.searchController, // Passer searchController ici
-          label: widget.label, // Passer le label ici
+          multipleSelection: widget.multipleSelection,
+          searchController: widget.searchController,
+          label: widget.label,
         ),
       );
 
-      if (selectedContacts == null || selectedContacts.isEmpty) {
+      if (selectedPhoneNumbers == null || selectedPhoneNumbers.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(widget.emptyMessage)),
         );
         return;
       }
 
-      // Extraire les numéros de téléphone sélectionnés
-      final List<String> phoneNumbers = selectedContacts
-          .where((contact) => contact.phones?.isNotEmpty ?? false)
-          .map((contact) => contact.phones!.first.value!.replaceAll(RegExp(r'[^\d+]'), ''))
-          .toList();
+      setState(() {
+        if (!widget.multipleSelection) {
+          // Mode simple : mettre à jour le champ avec un seul numéro
+          widget.controller.text = selectedPhoneNumbers.first;
+        }
+      });
 
-      if (phoneNumbers.isNotEmpty) {
-        setState(() {
-          if (!widget.multipleSelection) {
-            // Mode simple : mettre à jour le champ avec un seul numéro
-            widget.controller.text = phoneNumbers.first;
-          }
-        });
-
-        // Appeler le callback pour le mode multiple
-        widget.onContactsSelected?.call(phoneNumbers);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(widget.emptyMessage)),
-        );
-      }
+      // Appeler le callback pour le mode multiple
+      widget.onContactsSelected?.call(selectedPhoneNumbers);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

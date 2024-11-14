@@ -97,7 +97,7 @@ class _CreerPlanificationFormState extends State<CreerPlanificationForm> {
   void _onSubmit() {
     if (_formKey.currentState?.validate() ?? false) {
       final planification = PlanificationTransfert(
-        id: '',
+        id: 0,
         destinataireTelephone: _destinataireController.text,
         montant: double.parse(_montantController.text),
         periodicite: _periodicite,

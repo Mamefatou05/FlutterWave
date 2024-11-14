@@ -15,6 +15,8 @@ class TransactionProvider with ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage; // Pour stocker les erreurs
 
+  List<TransferResponseDto>? _responses;
+
   TransactionProvider(TransactionService transactionService, UserProvider userProvider)
       : _transactionService = transactionService,
         _userProvider = userProvider;
@@ -23,19 +25,24 @@ class TransactionProvider with ChangeNotifier {
   String? get error => _error;
   String? get fieldError => _fieldError;
   String? get errorMessage => _errorMessage;
-
-
+  List<TransferResponseDto>? get responses => _responses;
   List<TransactionListDto> get transactions => _transactions;
   bool get isLoading => _isLoading;
 
   Future<void> fetchTransactions() async {
+    print('debut des recuperations ');
     _isLoading = true;
     _errorMessage = null; // Réinitialiser le message d'erreur
     notifyListeners();
 
     try {
+      print("juste avant d'appeler les services");
+
       // Appel au service pour récupérer les transactions
       _transactions = await _transactionService.getMyTransactions();
+      print("juste apres avoir appeler les transactions");
+
+
 
     } catch (error) {
       // En cas d'erreur, stocker le message et notifier les listeners
@@ -73,15 +80,12 @@ class TransactionProvider with ChangeNotifier {
       _setError("Utilisateur non connecté");
       return false;
     }
-
     final transferRequest = TransferRequestDto(
       senderPhoneNumber: senderPhoneNumber,
       recipientPhoneNumber: receiverPhone,
       amount: amount,
       groupReference: description,
     );
-
-
       final response = await _transactionService.transfer(transferRequest);
       _setLoading(false);
       // Vérifie si la réponse est un succès
@@ -91,10 +95,7 @@ class TransactionProvider with ChangeNotifier {
       return false;
   }
 
-  List<TransferResponseDto>? _responses;
 
-
-  List<TransferResponseDto>? get responses => _responses;
 
   Future<void> performMultipleTransfer({
     required List<String> receiverPhone,

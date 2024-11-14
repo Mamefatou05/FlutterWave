@@ -1,5 +1,4 @@
 import 'package:decimal/decimal.dart';
-
 import 'BaseModel.dart';
 import 'TrasactionModel.dart';
 import 'UserModel.dart';
@@ -36,38 +35,31 @@ class Transaction extends BaseModel {
     return Transaction(
       id: json['id'],
       dateCreation: DateTime.parse(json['dateCreation']),
-      dateModification: json['dateModification'] != null
-          ? DateTime.parse(json['dateModification'])
-          : null,
-      expediteur: json['expediteur'] != null
-          ? UserModel.fromJson(json['expediteur'])
-          : null,
-      destinataire: json['destinataire'] != null
-          ? UserModel.fromJson(json['destinataire'])
-          : null,
+      dateModification: json['dateModification'] != null ? DateTime.parse(json['dateModification']) : null,
+      expediteur: json['expediteur'] != null ? UserModel.fromJson(json['expediteur']) : null,
+      destinataire: json['destinataire'] != null ? UserModel.fromJson(json['destinataire']) : null,
       montant: Decimal.parse(json['montant'].toString()),
       typeTransaction: TransactionType.values.firstWhere(
-              (e) => e.toString() == 'TransactionType.${json['typeTransaction']}'),
+            (e) => e.toString() == 'TransactionType.${json['typeTransaction']}',
+        orElse: () => TransactionType.DEFAULT, // Default type
+      ),
       statut: TransactionStatus.values.firstWhere(
-              (e) => e.toString() == 'TransactionStatus.${json['statut']}'),
+            (e) => e.toString() == 'TransactionStatus.${json['statut']}',
+        orElse: () => TransactionStatus.PENDING, // Default status
+      ),
       referenceGroupe: json['referenceGroupe'],
-      fraisTransfert: json['fraisTransfert'] != null
-          ? Decimal.parse(json['fraisTransfert'].toString())
-          : null,
-      transactionOrigine: json['transactionOrigine'] != null
-          ? Transaction.fromJson(json['transactionOrigine'])
-          : null,
-      dateAnnulation: json['dateAnnulation'] != null
-          ? DateTime.parse(json['dateAnnulation'])
-          : null,
+      fraisTransfert: json['fraisTransfert'] != null ? Decimal.parse(json['fraisTransfert'].toString()) : null,
+      transactionOrigine: json['transactionOrigine'] != null ? Transaction.fromJson(json['transactionOrigine']) : null,
+      dateAnnulation: json['dateAnnulation'] != null ? DateTime.parse(json['dateAnnulation']) : null,
       motifAnnulation: json['motifAnnulation'],
     );
   }
 
-  @override
   Map<String, dynamic> toJson() {
     return {
-      ...super.toJson(),
+      'id': id,
+      'dateCreation': dateCreation.toIso8601String(),
+      'dateModification': dateModification?.toIso8601String(),
       'expediteur': expediteur?.toJson(),
       'destinataire': destinataire?.toJson(),
       'montant': montant.toString(),
@@ -79,5 +71,10 @@ class Transaction extends BaseModel {
       'dateAnnulation': dateAnnulation?.toIso8601String(),
       'motifAnnulation': motifAnnulation,
     };
+  }
+
+  @override
+  String toString() {
+    return 'Transaction(id: $id, montant: $montant, typeTransaction: $typeTransaction, statut: $statut)';
   }
 }

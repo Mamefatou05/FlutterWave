@@ -49,11 +49,9 @@ class UserModel {
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     try {
-      // Vérification et conversion sécurisée de l'ID
       final id = json['id'];
       if (id == null) throw FormatException('ID is required');
 
-      // Parse le type de notification de manière sécurisée
       NotificationType parseNotificationType(String? value) {
         if (value == null) return NotificationType.SMS;
         try {
@@ -67,16 +65,16 @@ class UserModel {
         }
       }
 
-      // Parse les listes de manière sécurisée
       List<T> parseList<T>(List? jsonList, T Function(Map<String, dynamic>) fromJson) {
         if (jsonList == null) return [];
         try {
           return jsonList
-              .where((item) => item != null)
+              .where((item) => item != null && item is Map<String, dynamic>)
               .map((item) => fromJson(item as Map<String, dynamic>))
               .toList();
         } catch (e) {
           debugPrint('Error parsing list of type $T: $e');
+          debugPrint('Content of list causing issue: $jsonList');
           return [];
         }
       }
@@ -92,37 +90,19 @@ class UserModel {
         estActif: json['estActif'] as bool? ?? false,
         typeNotification: parseNotificationType(json['typeNotification']?.toString()),
         role: json['role'] != null ? Role.fromJson(json['role'] as Map<String, dynamic>) : null,
-        transactionsEnvoyees: parseList(
-          json['transactionsEnvoyees'] as List?,
-          Transaction.fromJson,
-        ),
-        transactionsRecues: parseList(
-          json['transactionsRecues'] as List?,
-          Transaction.fromJson,
-        ),
-        numerosFavoris: parseList(
-          json['numerosFavoris'] as List?,
-          NumeroFavori.fromJson,
-        ),
-        notifications: parseList(
-          json['notifications'] as List?,
-          NotificationModel.fromJson,
-        ),
-        pointAgent: json['pointAgent'] != null
-            ? PointAgent.fromJson(json['pointAgent'] as Map<String, dynamic>)
-            : null,
-        plafond: json['plafond'] != null
-            ? Plafond.fromJson(json['plafond'] as Map<String, dynamic>)
-            : null,
-        marchand: json['marchand'] != null
-            ? Marchand.fromJson(json['marchand'] as Map<String, dynamic>)
-            : null,
+        transactionsEnvoyees: parseList(json['transactionsEnvoyees'] as List?, Transaction.fromJson),
+        transactionsRecues: parseList(json['transactionsRecues'] as List?, Transaction.fromJson),
+        numerosFavoris: parseList(json['numerosFavoris'] as List?, NumeroFavori.fromJson),
+        notifications: parseList(json['notifications'] as List?, NotificationModel.fromJson),
+        pointAgent: json['pointAgent'] != null ? PointAgent.fromJson(json['pointAgent'] as Map<String, dynamic>) : null,
+        plafond: json['plafond'] != null ? Plafond.fromJson(json['plafond'] as Map<String, dynamic>) : null,
+        marchand: json['marchand'] != null ? Marchand.fromJson(json['marchand'] as Map<String, dynamic>) : null,
       );
     } catch (e, stackTrace) {
       debugPrint('Error parsing UserModel: $e');
       debugPrint('Stack trace: $stackTrace');
       debugPrint('JSON data: $json');
-      rethrow; // Relance l'erreur pour la gestion en amont
+      rethrow;
     }
   }
 

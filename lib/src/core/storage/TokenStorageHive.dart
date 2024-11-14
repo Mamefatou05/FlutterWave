@@ -1,46 +1,43 @@
-import 'package:hive/hive.dart';
+import '../../services/HiveService.dart';
 import 'TokenStorageInterface.dart';
 
 class TokenStorageHive implements TokenStorageInterface {
-  late Box<String> _box;
-
-  TokenStorageHive() {
-    _box = Hive.box('secureBox');  // Assurez-vous d'ouvrir la boîte Hive avant utilisation
-  }
+  final HiveService _hiveService;
+  TokenStorageHive({required HiveService hiveService}) : _hiveService = hiveService;
 
   @override
   Future<void> saveToken(String token) async {
-    await _box.put('jwt', token);
+    await _hiveService.saveData<String>('jwt', token);
   }
 
   @override
   Future<void> saveRefreshToken(String refreshToken) async {
-    await _box.put('refresh_token', refreshToken);
+    await _hiveService.saveData<String>('refresh_token', refreshToken);
   }
 
   @override
   Future<String?> getToken() async {
-    return _box.get('jwt');
+    return _hiveService.getData<String>('jwt');
   }
 
   @override
   Future<String?> getRefreshToken() async {
-    return _box.get('refresh_token');
+    return _hiveService.getData<String>('refresh_token');
   }
 
   @override
   Future<void> deleteToken() async {
-    await _box.delete('jwt');
+    await _hiveService.deleteData('jwt');
   }
 
   @override
   Future<void> deleteRefreshToken() async {
-    await _box.delete('refresh_token');
+    await _hiveService.deleteData('refresh_token');
   }
 
   @override
   Future<void> deleteAllTokens() async {
-    await _box.delete('jwt');
-    await _box.delete('refresh_token');
+    await _hiveService.deleteData('jwt');
+    await _hiveService.deleteData('refresh_token');
   }
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/TrasactionModel.dart';
 import '../../models/UserModel.dart';
-import '../../providers/UserProvider.dart';
 import 'TransactionCard.dart'; // Importez le widget TransactionCard
 
 class TransactionList extends StatelessWidget {
@@ -17,12 +16,20 @@ class TransactionList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: ListView.builder(
+      child: transactions.isEmpty
+          ? const Center(
+        child: Text(
+          'Aucune transaction disponible',
+          style: TextStyle(fontSize: 16, color: Colors.grey),
+        ),
+      )
+          : ListView.builder(
         itemCount: transactions.length,
         itemBuilder: (context, index) {
           final transaction = transactions[index];
-          final bool isReceived = transaction.isReceived(user.numeroTelephone);
-          return TransactionCard(transaction: transaction, isReceived: isReceived);
+
+          // Retournez un TransactionCard pour chaque transaction
+          return TransactionCard(transaction: transaction);
         },
       ),
     );

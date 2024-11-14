@@ -46,10 +46,8 @@ class PlanificationTransfertModel {
     return 'PlanificationTransfertModel{expediteurTelephone: $expediteurTelephone, destinataireTelephone: $destinataireTelephone, montant: $montant, periodicite: $periodicite, referenceGroupe: $referenceGroupe, heureExecution: $heureExecution}';
   }
 }
-
-
 class PlanificationTransfert {
-  final String id;
+  final int id;  // Changement de String à int
   final String destinataireTelephone;
   final double montant;
   final String periodicite;
@@ -66,7 +64,7 @@ class PlanificationTransfert {
   // Méthode pour créer une instance depuis une map (utile pour la récupération de données JSON ou Firebase)
   factory PlanificationTransfert.fromMap(Map<String, dynamic> data) {
     return PlanificationTransfert(
-      id: data['id'] ?? '',
+      id: data['id'] ?? 0,  // Assurez-vous que 'id' est bien un int
       destinataireTelephone: data['destinataireTelephone'] ?? '',
       montant: data['montant']?.toDouble() ?? 0.0,
       periodicite: data['periodicite'] ?? 'JOURNALIER',
@@ -76,7 +74,7 @@ class PlanificationTransfert {
 
   factory PlanificationTransfert.fromJson(Map<String, dynamic> json) {
     return PlanificationTransfert(
-      id: json['id'] ?? '',
+      id: json['id'] ?? 0,  // Assurez-vous que 'id' est bien un int
       destinataireTelephone: json['destinataireTelephone'] ?? '',
       montant: (json['montant'] ?? 0.0).toDouble(),
       periodicite: json['periodicite'] ?? 'JOURNALIER',
@@ -87,6 +85,7 @@ class PlanificationTransfert {
   // Méthode pour convertir une instance en map (utile pour envoyer des données JSON ou Firebase)
   Map<String, dynamic> toMap() {
     return {
+      'id': id,  // Inclure 'id' si nécessaire
       'destinataireTelephone': destinataireTelephone,
       'montant': montant,
       'periodicite': periodicite,
@@ -100,4 +99,3 @@ class PlanificationTransfert {
     return 'PlanificationTransfert(id: $id, destinataireTelephone: $destinataireTelephone, montant: $montant, periodicite: $periodicite, heureExecution: $heureExecution)';
   }
 }
-

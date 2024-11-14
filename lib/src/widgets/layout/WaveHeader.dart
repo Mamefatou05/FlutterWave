@@ -59,7 +59,7 @@ class WaveHeader extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: IconButton(
-                  icon: Icon(Icons.arrow_back, color: Colors.black),
+                  icon: Icon(Icons.arrow_back, color:Color(0xFF6B35E8) ),
                   onPressed: () => Navigator.pop(context),
                 ),
               ),
@@ -76,22 +76,7 @@ class WaveHeader extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Icon(
-                            Icons.radio_button_checked,
-                            size: 50,
-                            color: Colors.white,
-                          ),
-                          CustomPaint(
-                            size: Size(30, 30),
-                            painter: CircuitIconPainter(color: Colors.white),
-                          ),
-                        ],
-                      ),
-                    ),
+
                     SizedBox(width: 8),
                     Text(
                       title,
